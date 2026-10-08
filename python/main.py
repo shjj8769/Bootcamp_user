@@ -1,6 +1,6 @@
 # python/main.py
 from fastapi import FastAPI
-from APIRouter.payment import payment_router  # 구조화된 라우터 불러오기
+from ApiRouter.payment import payment_router  # 구조화된 라우터 불러오기
 from ApiRouter.refund import refund_router 
 
 app = FastAPI()
