@@ -15,9 +15,9 @@ router = APIRouter()
 # 결제 등록 시 앱이 보내야 하는 값 (payment 테이블 형식)
 # BaseModel: 값이 빠졌거나 타입이 틀리면 함수 실행 전에 422 에러를 자동으로 돌려줌
 class Payment(BaseModel):
-    customer_customer_id: str            # 결제한 고객
-    head_office_id: str                  # 결제받는 본사
-    pay_code: str                        # 결제 코드
+    email: str                           # 결제한 고객 (customer.email)
+    e_id: str                            # 결제받는 본사 직원 (employee.e_id)
+    pay_id: str                          # 결제번호
     pay_date: Optional[datetime] = None  # 비어 있으면 현재 시각으로 저장
     pay_price: int                       # 결제 금액
     # seq(결제번호)는 DB가 AUTO_INCREMENT로 자동 생성하므로 받지 않음
@@ -31,13 +31,13 @@ def insert_payment(payment: Payment):
             # %s 자리에 값이 순서대로 들어감 (SQL 인젝션 방지)
             sql = """
                 INSERT INTO payment
-                    (customer_customer_id, head_office_id, pay_code, pay_date, pay_price)
+                    (email, e_id, pay_id, pay_date, pay_price)
                 VALUES (%s, %s, %s, %s, %s)
             """
             curs.execute(sql, (
-                payment.customer_customer_id,
-                payment.head_office_id,
-                payment.pay_code,
+                payment.email,
+                payment.e_id,
+                payment.pay_id,
                 payment.pay_date or datetime.now(),  # 날짜가 없으면 지금 시각
                 payment.pay_price,
             ))

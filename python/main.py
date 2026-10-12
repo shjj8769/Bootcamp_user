@@ -3,8 +3,11 @@
 # 실행 후 http://127.0.0.1:8000/docs 에서 모든 API 테스트 가능
 from fastapi import FastAPI
 from ApiRouter.auth import auth_router
+from ApiRouter.log import log_router
 from ApiRouter.payment import payment_router  # 구조화된 라우터 불러오기
 from ApiRouter.refund import refund_router    # 반품 라우터
+from ApiRouter.purchase import purchase_router  # 구매 라우터
+from ApiRouter.pickup import pickup_router    # 수령 라우터
 from ApiRouter.product import product_router  # 제품 라우터
 
 # FastAPI 서버 객체 (uvicorn이 이 app을 실행함)
@@ -14,10 +17,12 @@ app = FastAPI()
 # 예: payment_router 안의 "/" → 실제 주소는 "/payment/"
 app.include_router(payment_router, prefix="/payment")  # 결제
 app.include_router(refund_router, prefix="/refund")    # 반품
+app.include_router(purchase_router, prefix="/purchase")  # 구매
+app.include_router(pickup_router, prefix="/pickup")    # 수령
 app.include_router(product_router, prefix="/product")  # 제품
-# /payment 주소로 들어오는 모든 요청을 연결
-app.include_router(payment_router, prefix="/payment")
-app.include_router(refund_router, prefix="/refund")
 
 # 회원가입·로그인·비밀번호 변경 API
 app.include_router(auth_router, prefix="/auth")
+
+# 로그 API 주소는 기존 /auth/log/... 형식을 유지합니다.
+app.include_router(log_router, prefix="/auth", tags=["Auth Log"])
