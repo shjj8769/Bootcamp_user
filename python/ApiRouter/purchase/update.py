@@ -1,23 +1,13 @@
 # python/APIRouter/purchase/update.py
 # 구매 항목 수정 API → PUT /purchase/{p_id}
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import PurchaseUpdate
 
 router = APIRouter()
-
-
-# 수정할 값 (p_id는 주소로 받음)
-# 결제번호/고객/제품은 구매의 주체라 수정 대상에서 제외 → 바꾸려면 삭제 후 다시 등록
-class PurchaseUpdate(BaseModel):
-    p_count: int                         # 구매수량
-    p_date: Optional[datetime] = None    # 비어 있으면 현재 시각으로 저장
-    p_price: int                         # 구매가격
-    store_seq: int                       # 수령 대리점 변경
 
 
 @router.put("/{p_id}")

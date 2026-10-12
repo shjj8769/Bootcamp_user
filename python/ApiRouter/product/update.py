@@ -1,24 +1,11 @@
 # python/APIRouter/product/update.py
 # 제품 수정 API → PUT /product/{SKU}
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import ProductUpdate
 
 router = APIRouter()
-
-
-# 수정할 값 (SKU는 주소로 받음, pr_image는 별도 처리)
-# SKU를 제외한 모든 컬럼을 한 번에 덮어씀 → 안 바꿀 값도 기존 값 그대로 보내야 함
-class ProductUpdate(BaseModel):
-    pr_code: str        # 모델 코드
-    pr_name: str        # 제품명
-    pr_brand: str       # 브랜드명
-    pr_price: int       # 제품가격
-    category: str       # 품목
-    gender: str         # 성별
-    size: int           # 사이즈
-    color: str          # 색상
 
 
 @router.put("/{SKU}")

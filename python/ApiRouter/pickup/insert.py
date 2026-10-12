@@ -2,25 +2,13 @@
 # 수령 처리 API → POST /pickup/
 # 고객이 대리점에 방문해 구매한 제품을 찾아갈 때, 대리점 직원이 확인 후 기록 (pick_up 테이블)
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import Pickup
 
 router = APIRouter()
-
-
-# pick_up 테이블 형식에 맞춘 요청 바디
-# BaseModel: 값이 빠졌거나 타입이 틀리면 함수 실행 전에 422 에러를 자동으로 돌려줌
-class Pickup(BaseModel):
-    e_id: str                            # 확인한 대리점 직원 예: SALES-002
-    email: str                           # 수령한 고객 (customer.email)
-    SKU: str                             # 수령한 제품 (product.SKU)
-    store_seq: int                       # 수령한 대리점
-    p_date: Optional[datetime] = None    # 비어 있으면 현재 시각으로 저장
-    # p_id(수령id)는 DB가 AUTO_INCREMENT로 자동 생성하므로 받지 않음
 
 
 @router.post("/")

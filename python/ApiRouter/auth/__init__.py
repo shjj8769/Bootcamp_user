@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from .signup import router as signup_router
 from .login import router as login_router
 from .password_update import router as password_update_router
+from .profile import router as profile_router
 
 # auth 전체를 아우르는 메인 라우터 생성
 auth_router = APIRouter()
@@ -11,3 +12,4 @@ auth_router = APIRouter()
 auth_router.include_router(signup_router, tags=["Auth Signup"])
 auth_router.include_router(login_router, tags=["Auth Login"])
 auth_router.include_router(password_update_router, tags=["Auth Password Update"])
+auth_router.include_router(profile_router, tags=["Auth Profile"])

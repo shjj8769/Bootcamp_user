@@ -1,26 +1,14 @@
 # python/APIRouter/payment/insert.py
 # 결제 등록 API → POST /payment/
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import Payment
 
 # 이 파일의 API들을 담는 라우터 (__init__.py에서 payment_router로 묶임)
 router = APIRouter()
-
-
-# 결제 등록 시 앱이 보내야 하는 값 (payment 테이블 형식)
-# BaseModel: 값이 빠졌거나 타입이 틀리면 함수 실행 전에 422 에러를 자동으로 돌려줌
-class Payment(BaseModel):
-    email: str                           # 결제한 고객 (customer.email)
-    e_id: str                            # 결제받는 본사 직원 (employee.e_id)
-    pay_id: str                          # 결제번호
-    pay_date: Optional[datetime] = None  # 비어 있으면 현재 시각으로 저장
-    pay_price: int                       # 결제 금액
-    # seq(결제번호)는 DB가 AUTO_INCREMENT로 자동 생성하므로 받지 않음
 
 
 @router.post("/")

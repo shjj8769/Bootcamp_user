@@ -3,27 +3,12 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 from firebase_admin import firestore
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr, field_validator
-
 from .firebase import connect, find_customer
 from .login import matches_password
+from .models import PasswordUpdateCustomer
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-# 변경 요청에는 이메일, 현재 비밀번호, 새 비밀번호가 필요합니다.
-class PasswordUpdateCustomer(BaseModel):
-    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
-
-    email: EmailStr = Field(max_length=254)
-    current_password: SecretStr = Field(min_length=6, max_length=128)
-    new_password: SecretStr = Field(min_length=6, max_length=128)
-
-    @field_validator("email", mode="before")
-    @classmethod
-    def trim_email(cls, value):
-        return value.strip() if isinstance(value, str) else value
 
 
 def update_password_transaction(transaction, document_ref, customer):

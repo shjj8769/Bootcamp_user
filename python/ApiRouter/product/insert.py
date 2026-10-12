@@ -1,25 +1,11 @@
 # python/APIRouter/product/insert.py
 # 제품 등록 API → POST /product/
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import Product
 
 router = APIRouter()
-
-
-# product 테이블 형식에 맞춘 요청 바디 (pr_image는 별도 처리)
-# BaseModel: 값이 빠졌거나 타입이 틀리면 함수 실행 전에 422 에러를 자동으로 돌려줌
-class Product(BaseModel):
-    SKU: str            # 사이즈별 고유 코드 (PK) 예: AD-JEN-W-220-BLK
-    pr_code: str        # 모델 코드 예: AD-JEN-W
-    pr_name: str        # 제품명
-    pr_brand: str       # 브랜드명
-    pr_price: int       # 제품가격
-    category: str       # 데일리 / 클래식 / 아웃도어
-    gender: str         # 성별 (남성 / 여성 / 키즈 등)
-    size: int           # 사이즈
-    color: str          # 색상
 
 
 @router.post("/")
