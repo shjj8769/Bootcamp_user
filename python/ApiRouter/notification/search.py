@@ -20,7 +20,7 @@ def select_customer_notifications(email: str):
                 LEFT JOIN product pro ON pro.SKU = pur.SKU
                 LEFT JOIN store st ON st.seq = pur.store_seq
                 LEFT JOIN pick_up pk
-                    ON pk.p_id = pur.p_id AND pk.email = pur.email
+                    ON pk.purchase_p_id = pur.p_id AND pk.email = pur.email
                 WHERE pur.email = %s
                 ORDER BY COALESCE(pk.p_date, pur.p_date) DESC, pur.p_id DESC
                 """,
