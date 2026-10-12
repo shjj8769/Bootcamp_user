@@ -4,34 +4,12 @@ import logging
 from fastapi import APIRouter, HTTPException, Request
 from firebase_admin import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-from .firebase import connect, find_customer
+from ..auth.firebase import connect, find_customer
+from .models import CustomerLog, ConnectLog
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-class CustomerLog(BaseModel):
-    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
-
-    email: EmailStr = Field(max_length=254)
-    e_id: str = Field(min_length=1, max_length=100)
-
-    @field_validator("email", "e_id", mode="before")
-    @classmethod
-    def trim_text(cls, value):
-        return value.strip() if isinstance(value, str) else value
-
-
-class ConnectLog(CustomerLog):
-    # IP에서 위치를 추측하지 않고 요청에 전달된 위치를 사용합니다.
-    c_location: str = Field(min_length=1, max_length=500)
-
-    @field_validator("c_location", mode="before")
-    @classmethod
-    def trim_location(cls, value):
-        return value.strip() if isinstance(value, str) else value
 
 
 def check_log_references(db, email, e_id):
