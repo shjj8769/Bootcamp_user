@@ -4,7 +4,7 @@
 키와 .env는 커밋하지 않습니다. Authentication 설정 없이 기본 Firestore 데이터베이스를 사용합니다.
 
 실행: pip install -r python/requirements.txt
-서버: python -m uvicorn main:app --app-dir python --host 0.0.0.0 --port 8000 --reload
+서버: python3 python/main.py (192.168.20.68:8000 에서만 수신)
 
 - POST /auth/signup: 이메일, 비밀번호, 전화번호, 이름, 성별, 주소, 사이즈로 회원가입
 - POST /auth/login: 이메일과 비밀번호 확인

@@ -21,7 +21,7 @@ class LocalDatabase {
   static final LocalDatabase instance = LocalDatabase._();
 
   static const String _databaseName = 'shopping_local.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 4;
 
   // ERD의 엔티티 및 관계 테이블 이름을 화면 코드에서 재사용한다.
   static const String package = 'package';
@@ -32,6 +32,9 @@ class LocalDatabase {
   static const String recentlyViewedProduct = 'recently_viewed_product';
   static const String choice = 'choice';
   static const String search = 'search';
+  static const String favoriteStore = 'favorite_store';
+  static const String appSettings = 'app_settings';
+  static const String savedPaymentMethod = 'saved_payment_method';
 
   /// 허용된 테이블만 CRUD 메서드에 전달할 수 있게 제한한다.
   static const Set<String> _tables = {
@@ -43,6 +46,9 @@ class LocalDatabase {
     recentlyViewedProduct,
     choice,
     search,
+    favoriteStore,
+    appSettings,
+    savedPaymentMethod,
   };
 
   Database? _database;
@@ -74,7 +80,50 @@ class LocalDatabase {
         // 향후 스키마 변경은 버전별 ALTER TABLE 마이그레이션으로 추가한다.
         // 기존 데이터를 지우거나 임의로 다시 시드하지 않는다.
         if (oldVersion < 2 && newVersion >= 2) {
-          // 다음 스키마 버전에서 필요한 변경 사항을 여기에 작성한다.
+          await db.execute('''
+            CREATE TABLE "$favoriteStore" (
+              store_seq INTEGER PRIMARY KEY NOT NULL,
+              store_name TEXT NOT NULL,
+              address TEXT NOT NULL
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE "$appSettings" (
+              setting_key TEXT PRIMARY KEY NOT NULL,
+              setting_value TEXT NOT NULL
+            )
+          ''');
+        }
+        if (oldVersion < 3 && newVersion >= 3) {
+          await db.execute('''
+            ALTER TABLE "$coupon"
+            ADD COLUMN discount_type TEXT NOT NULL DEFAULT 'percent'
+          ''');
+          await db.execute('''
+            ALTER TABLE "$coupon"
+            ADD COLUMN start_date TEXT NOT NULL DEFAULT ''
+          ''');
+          await db.execute('''
+            ALTER TABLE "$coupon"
+            ADD COLUMN description TEXT NOT NULL DEFAULT ''
+          ''');
+          await db.execute('''
+            ALTER TABLE "$coupon"
+            ADD COLUMN status TEXT NOT NULL DEFAULT 'available'
+          ''');
+        }
+        if (oldVersion < 4 && newVersion >= 4) {
+          await db.execute('''
+            CREATE TABLE "$savedPaymentMethod" (
+              method_seq INTEGER PRIMARY KEY AUTOINCREMENT,
+              owner_email TEXT NOT NULL,
+              method_type TEXT NOT NULL CHECK (method_type IN ('card', 'kakaopay', 'naverpay')),
+              display_name TEXT NOT NULL,
+              card_last_four TEXT,
+              expires_on TEXT,
+              created_at TEXT NOT NULL
+            )
+          ''');
         }
       },
     );
@@ -98,7 +147,11 @@ class LocalDatabase {
         c_code TEXT NOT NULL,
         issuer TEXT NOT NULL,
         discount_rate REAL NOT NULL CHECK (discount_rate >= 0),
-        exp TEXT NOT NULL
+        exp TEXT NOT NULL,
+        discount_type TEXT NOT NULL DEFAULT 'percent',
+        start_date TEXT NOT NULL DEFAULT '',
+        description TEXT NOT NULL DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'available'
       )
     ''');
 
@@ -167,6 +220,32 @@ class LocalDatabase {
           ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (view_seq) REFERENCES "$recentlyViewedProduct" (view_seq)
           ON UPDATE CASCADE ON DELETE CASCADE
+      )
+    ''');
+
+    // 즐겨찾는 매장과 앱 표시 설정은 서버 스키마가 아닌 이 기기의 설정이다.
+    await db.execute('''
+      CREATE TABLE "$favoriteStore" (
+        store_seq INTEGER PRIMARY KEY NOT NULL,
+        store_name TEXT NOT NULL,
+        address TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE "$appSettings" (
+        setting_key TEXT PRIMARY KEY NOT NULL,
+        setting_value TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE "$savedPaymentMethod" (
+        method_seq INTEGER PRIMARY KEY AUTOINCREMENT,
+        owner_email TEXT NOT NULL,
+        method_type TEXT NOT NULL CHECK (method_type IN ('card', 'kakaopay', 'naverpay')),
+        display_name TEXT NOT NULL,
+        card_last_four TEXT,
+        expires_on TEXT,
+        created_at TEXT NOT NULL
       )
     ''');
   }

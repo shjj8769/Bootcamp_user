@@ -2,26 +2,13 @@
 # 반품 접수 API → POST /refund/
 # 고객이 대리점에 방문해 반품을 요청할 때 사용 (p_return 테이블)
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import Refund
 
 router = APIRouter()
-
-
-# p_return 테이블 형식에 맞춘 요청 바디
-# BaseModel: 값이 빠졌거나 타입이 틀리면 함수 실행 전에 422 에러를 자동으로 돌려줌
-class Refund(BaseModel):
-    email: str                          # 반품하는 고객 (customer.email)
-    p_r_id: int                         # 반품id = 반품할 구매번호 (purchase.p_id)
-    e_id: Optional[str] = None          # 접수한 대리점 직원
-    p_r_reason: str                     # 반품 사유
-    p_r_image: Optional[str] = None     # 반품 사진 (Firebase Storage URL)
-    p_r_date: Optional[datetime] = None  # 비어 있으면 현재 시각으로 저장
-    # is_refunded는 접수 시 항상 0(환불 전)
 
 
 @router.post("/")

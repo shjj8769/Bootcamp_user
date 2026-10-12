@@ -2,27 +2,13 @@
 # 구매 항목 등록 API → POST /purchase/
 # 고객이 선택한 상품 1개(SKU)를 결제(payment.seq)에 묶어서 저장 (purchase 테이블)
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import Purchase
 
 router = APIRouter()
-
-
-# purchase 테이블 형식에 맞춘 요청 바디
-# BaseModel: 값이 빠졌거나 타입이 틀리면 함수 실행 전에 422 에러를 자동으로 돌려줌
-class Purchase(BaseModel):
-    p_id: Optional[int] = None           # 구매번호 (AUTO_INCREMENT) → 비워두면 DB가 다음 번호로 자동 생성
-    p_seq: int                           # 결제번호 (payment.seq) → 어떤 결제에 포함된 상품인지
-    p_count: int                         # 구매수량
-    p_date: Optional[datetime] = None    # 비어 있으면 현재 시각으로 저장
-    p_price: int                         # 구매가격
-    email: str                           # 구매한 고객 (customer.email)
-    SKU: str                             # 구매한 제품 (product.SKU)
-    store_seq: int                       # 수령할 희망 대리점
 
 
 @router.post("/")

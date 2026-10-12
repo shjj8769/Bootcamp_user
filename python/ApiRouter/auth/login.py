@@ -3,26 +3,11 @@ import hmac
 import logging
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr, field_validator
-
 from .firebase import connect, find_customer
+from .models import LoginCustomer
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-# 로그인 요청에는 회원가입한 이메일과 비밀번호만 받습니다.
-class LoginCustomer(BaseModel):
-    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
-
-    # 회원가입에서 사용한 이메일을 로그인 아이디로 사용합니다.
-    email: EmailStr = Field(max_length=254)
-    password: SecretStr = Field(min_length=6, max_length=128)
-
-    @field_validator("email", mode="before")
-    @classmethod
-    def trim_email(cls, value):
-        return value.strip() if isinstance(value, str) else value
 
 
 def matches_password(password: str, profile: dict) -> bool:

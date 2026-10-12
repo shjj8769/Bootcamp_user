@@ -3,39 +3,15 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 from google.api_core.exceptions import AlreadyExists
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr, field_validator
 from pymysql.err import IntegrityError
 
 from db import connect as sql_connect
 
 from .firebase import connect, customer_document_id, find_customer
+from .models import Customer
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-
-# 회원가입 요청 데이터 (비밀번호는 입력한 값으로 저장합니다)
-class Customer(BaseModel):
-    # 정의하지 않은 필드는 거부하고 검증 오류에 입력값이 노출되지 않도록 설정합니다.
-    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
-
-    email: EmailStr = Field(max_length=45)
-    # SecretStr은 객체 출력 시 값을 가립니다. 저장 시 암호화하는 기능은 아닙니다.
-    password: SecretStr = Field(min_length=6, max_length=128)
-    tel: str = Field(min_length=1, max_length=30)
-    c_name: str = Field(min_length=1, max_length=45)
-    c_gender: str = Field(min_length=1, max_length=20)
-    c_address: str = Field(min_length=1, max_length=45)
-    c_path: str = Field(default="", max_length=2048)
-    c_size: str = Field(min_length=1, max_length=20)
-
-    @field_validator("email", "tel", "c_name", "c_gender", "c_address", "c_size", mode="before")
-    @classmethod
-    def trim_text(cls, value):
-        # 입력한 문자열 앞뒤의 공백을 제거합니다.
-        if isinstance(value, str):
-            return value.strip()
-        return value
 
 
 # POST /auth/signup: SQL customer와 Firestore에 신규 회원 정보를 저장합니다.

@@ -1,22 +1,13 @@
 # python/APIRouter/payment/update.py
 # 결제 수정 API → PUT /payment/{seq}
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import PaymentUpdate
 
 router = APIRouter()
-
-
-# 수정할 값 (seq는 주소로 받음)
-# 고객/본사는 결제 주체라 수정 대상에서 제외
-class PaymentUpdate(BaseModel):
-    pay_id: str
-    pay_date: Optional[datetime] = None  # 비어 있으면 현재 시각으로 저장
-    pay_price: int
 
 
 @router.put("/{seq}")

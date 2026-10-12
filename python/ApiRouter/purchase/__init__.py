@@ -8,6 +8,7 @@ from .insert import router as insert_router   # 구매 등록
 from .search import router as search_router   # 구매 조회
 from .update import router as update_router   # 구매 수정
 from .delete import router as delete_router   # 구매 삭제
+from .checkout import router as checkout_router  # 통합 주문 처리
 
 # purchase 전체를 아우르는 메인 라우터 생성
 purchase_router = APIRouter()
@@ -18,3 +19,4 @@ purchase_router.include_router(insert_router, tags=["Purchase Insert"])
 purchase_router.include_router(search_router, tags=["Purchase Search"])
 purchase_router.include_router(update_router, tags=["Purchase Update"])
 purchase_router.include_router(delete_router, tags=["Purchase Delete"])
+purchase_router.include_router(checkout_router, tags=["Purchase Checkout"])

@@ -1,20 +1,12 @@
 # python/APIRouter/refund/update.py
 # 환불 처리 API → PUT /refund/{p_r_id}
 # 대리점/본사 직원이 반품을 확인하고 환불 완료로 바꿀 때 사용
-from typing import Optional
-
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from db import connect  # 공용 DB 연결 함수 (python/db.py)
+from .models import RefundUpdate
 
 router = APIRouter()
-
-
-# 반품 처리 상태 변경 (p_r_id는 주소로 받음)
-class RefundUpdate(BaseModel):
-    is_refunded: int                # 0: 환불 전, 1: 환불 완료
-    e_id: Optional[str] = None      # 처리한 직원 (비어 있으면 기존 값 유지)
 
 
 @router.put("/{p_r_id}")
