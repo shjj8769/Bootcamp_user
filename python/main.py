@@ -3,6 +3,7 @@
 # 실행 후 http://127.0.0.1:8000/docs 에서 모든 API 테스트 가능
 from fastapi import FastAPI
 from ApiRouter.auth import auth_router
+from ApiRouter.log import log_router
 from ApiRouter.payment import payment_router  # 구조화된 라우터 불러오기
 from ApiRouter.refund import refund_router    # 반품 라우터
 from ApiRouter.purchase import purchase_router  # 구매 라우터
@@ -22,3 +23,6 @@ app.include_router(product_router, prefix="/product")  # 제품
 
 # 회원가입·로그인·비밀번호 변경 API
 app.include_router(auth_router, prefix="/auth")
+
+# 로그 API 주소는 기존 /auth/log/... 형식을 유지합니다.
+app.include_router(log_router, prefix="/auth", tags=["Auth Log"])
