@@ -404,3 +404,6 @@ fastapid/data/
 **/service-account*.json
 
 python/fastapi/data/
+
+# 서버용 Firebase 서비스 계정 키
+python/secrets/
