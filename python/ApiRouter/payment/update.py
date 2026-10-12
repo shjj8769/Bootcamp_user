@@ -14,7 +14,7 @@ router = APIRouter()
 # 수정할 값 (seq는 주소로 받음)
 # 고객/본사는 결제 주체라 수정 대상에서 제외
 class PaymentUpdate(BaseModel):
-    pay_code: str
+    pay_id: str
     pay_date: Optional[datetime] = None  # 비어 있으면 현재 시각으로 저장
     pay_price: int
 
@@ -26,11 +26,11 @@ def update_payment(seq: int, payment: PaymentUpdate):
         with conn.cursor() as curs:
             sql = """
                 UPDATE payment
-                SET pay_code = %s, pay_date = %s, pay_price = %s
+                SET pay_id = %s, pay_date = %s, pay_price = %s
                 WHERE seq = %s
             """
             curs.execute(sql, (
-                payment.pay_code,
+                payment.pay_id,
                 payment.pay_date or datetime.now(),  # 날짜가 없으면 지금 시각
                 payment.pay_price,
                 seq,
